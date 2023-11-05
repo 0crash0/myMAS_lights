@@ -1,0 +1,243 @@
+/*
+-------------------------------------------
+-------------------------------------------
+-------------My Mass Ligts-----------------
+-------------------------------------------
+--------------MEL SCRIPT-------------------
+Author: Saprin Alexey Petrovich aka 0crash0
+icq: 312014478
+e-mail: 0crash0@bk.ru
+site: 0crash0.tw1.ru
+Created: 19-20.10.2013
+version: 1.02
+License: U can use it in all purposes
+-------------------------------------------
+-------------------------------------------
+*/
+
+global proc myMAS_lightsUI(){
+	string $dialog;
+	if (`window -exists $dialog`)deleteUI -window $dialog;
+	string $d = `internalVar -usd`;
+	$dialog = `loadUI -uiFile ($d+"myMAS_lights/myMAS_lights.ui")`;
+	showWindow $dialog;
+	msLits_updSlLst();
+	
+}
+//**************************************** Proc to CHANGE LIGHT ATTRIBUTES
+global proc masLights_attr_aply()
+{
+int $iter =0;
+$ssel = `ls -sl`;
+	for ($light in $ssel)   //starts loop
+	{
+	//INTENSITY
+		if (`checkBox -query -value ints_ap`){
+			float $intens = `intSlider -query -value intns_sl`;
+			setAttr ($light + ".intensity") $intens;
+			
+		}
+
+	//illuminate by default	
+		if (`checkBox -query -value ilbdf_ap`){
+			int $ilumbdef = `checkBox -query -value ilbd`;
+			if ($ilumbdef == 0){
+				$conn= `connectionInfo -destinationFromSource ($light+".instObjGroups")`;
+				
+				//checking for defaultLightSet
+				for ($lght in $conn)
+				{
+					string $chk = $lght;
+					if (`match "defaultLightSet*" $chk` != ""){
+						disconnectAttr ($light + ".instObjGroups") $lght;
+					}
+					
+				}//end of find loop
+			}
+			if($ilumbdef == 1){
+				connectAttr -nextAvailable ($light + ".instObjGroups") defaultLightSet.dagSetMembers;
+			}
+		}
+
+	//Emmit diffuse
+		if (`checkBox -query -value edf_ap`){
+			int $emit_diff = `checkBox -query -value emdf`;
+			setAttr ($light + ".emitDiffuse") $emit_diff;
+			
+		}
+		
+	//Emmit Specular
+		if (`checkBox -query -value espc_ap`){
+			int $emit_spec = `checkBox -query -value emsp`;
+			setAttr ($light + ".emitSpecular") $emit_spec;
+			
+		}
+
+	//decay rate
+		if (`checkBox -query -value dec_ap`){
+			int $decay = `optionMenu -q -sl dcyrt_bx`;
+			setAttr ($light + ".decayRate") ($decay-1);
+			
+		}
+
+	//cone ANGLE
+		if (`checkBox -query -value cang_ap`){
+			float $coneangl = `intSlider -query -value cnang_sl`;
+			setAttr ($light + ".coneAngle") $coneangl;
+			
+		}
+
+	//prenambula angle
+		if (`checkBox -query -value prang_ap`){
+			float $prenaangl = `intSlider -query -value prnbangl_sl`;
+			setAttr ($light + ".penumbraAngle") $prenaangl;
+			
+		}
+
+
+		if (`checkBox -query -value drpof_ap`){
+			float $drpOff = `intSlider -query -value drpof_sl`;
+			setAttr ($light + ".dropoff") $drpOff;
+			
+		}
+		$iter = $iter+1;
+	};  	//end loop loop
+	checkBox -e -value 0 ints_ap;
+	checkBox -e -value 0 ilbdf_ap;
+	checkBox -e -value 0 edf_ap;
+	checkBox -e -value 0 espc_ap;
+	checkBox -e -value 0 dec_ap;
+	checkBox -e -value 0 cang_ap;
+	checkBox -e -value 0 prang_ap;
+	checkBox -e -value 0 drpof_ap;
+}
+
+//**************************************** Proc to CHANGE RAY TRACE SHADOWS OPTIONS AT LIGHTS
+global proc masLights_rtsh_aply()
+{
+int $iter =0;
+$ssel = `ls -sl`;
+	for ($light in $ssel)   //starts loop
+	{
+	//use ray trace shadows
+		if (`checkBox -query -value urts_apl`){
+			int $rtshen = `checkBox -query -value use_rtrs_chk`;
+			setAttr ($light + ".useRayTraceShadows") $rtshen;
+			
+		}
+		//light radius
+		if (`checkBox -query -value rtslr_apl`){
+			float $rtslr = `intSlider -query -value rtslr_sl`;
+			setAttr ($light + ".lightRadius") $rtslr;
+			
+		}
+		//shadow rays
+		if (`checkBox -query -value rtssr_apl`){
+			float $rtshr = `intSlider -query -value rtssr_sl`;
+			setAttr ($light + ".shadowRays") $rtshr;
+			
+		}
+		//ray depth limit
+		if (`checkBox -query -value rtsrdl_apl`){
+			float $rtsrdl = `intSlider -query -value rtsrdl_sl`;
+			setAttr ($light + ".rayDepthLimit") $rtsrdl;
+			
+		}
+
+
+		$iter = $iter+1;
+	};  	//end loop loop
+	checkBox -e -value 0 urts_apl;
+	checkBox -e -value 0 rtslr_apl;
+	checkBox -e -value 0 rtssr_apl;
+	checkBox -e -value 0 rtsrdl_apl;
+}
+
+
+
+//***********************proc APPLY ALL
+global proc msLits_aplAL (){
+	masLights_attr_aply();
+	masLights_rtsh_aply();
+}
+
+//Proc update list
+global proc msLits_updSlLst(){
+	textScrollList -edit -ra objectScrollList;  //-removeALL
+	$ssel = `ls -sl`;
+	for ($light in $ssel)
+	{
+		textScrollList -edit -append $light objectScrollList;
+	};
+}
+//Proc DeSelect and update list
+global proc msLits_dsel(){
+	$ltstdsel = `textScrollList -q -selectItem objectScrollList`;
+	for ($litdes in $ltstdsel)
+	{
+		select -d $litdes;
+	}
+	msLits_updSlLst();
+};
+
+
+// proc used to change states of applyment
+
+global proc itstSTapl (){
+checkBox -e -value 1 ints_ap;
+}
+
+//illuminates by default apply
+global proc ilbdfSTapl (){
+checkBox -e -value 1 ilbdf_ap;
+}
+
+//emmit diffuse apply
+global proc emdfSTapl (){
+checkBox -e -value 1 edf_ap;
+}
+
+//emmit splecular apply
+global proc emspSTapl (){
+checkBox -e -value 1 espc_ap;
+}
+
+//decay rate apply
+global proc dcrtSTapl (){
+checkBox -e -value 1 dec_ap;
+}
+
+
+//cone angle apply
+global proc cnanSTapl (){
+checkBox -e -value 1 cang_ap;
+}
+//prenambula angle apply
+global proc pranSTapl (){
+checkBox -e -value 1 prang_ap;
+}
+//drop OFF apply
+global proc drofSTapl (){
+checkBox -e -value 1 drpof_ap;
+}
+
+
+
+//***************** ray trace shadows apply's
+
+//use ray trace shadows apply
+global proc usRSHapl (){
+	checkBox -e -value 1 urts_apl;
+}
+//light radius apply
+global proc lrRSHapl (){
+	checkBox -e -value 1 rtslr_apl;
+}
+//shadow rays apply
+global proc srRSHapl (){
+	checkBox -e -value 1 rtssr_apl;
+}
+//ray depth limit apply
+global proc dlRSHapl (){
+	checkBox -e -value 1 rtsrdl_apl;
+}
