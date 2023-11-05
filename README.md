@@ -24,6 +24,7 @@
 `/Users/<username>/Library/Preferences/Autodesk/maya/<version>/scripts/myMAS_lights/myMAS_lights.mel`
 `/Users/<username>/Library/Preferences/Autodesk/maya/<version>/scripts/myMAS_lights/myMAS_lights.ui`
 2. You can create button on the shelf:
+
 	![](https://raw.githubusercontent.com/0crash0/myMAS_lights/main/images/Screenshot_1.png)
 
 	![](https://raw.githubusercontent.com/0crash0/myMAS_lights/main/images/Screenshot_2.png)
@@ -42,4 +43,5 @@ Light attributes, if you want to apply some of attributes, you have to check "ap
 ![](https://raw.githubusercontent.com/0crash0/myMAS_lights/main/images/Screenshot_5.png)
 
 ![](https://raw.githubusercontent.com/0crash0/myMAS_lights/main/images/Screenshot_6.png)
+
 ![](https://raw.githubusercontent.com/0crash0/myMAS_lights/main/images/Screenshot_7.png)
