@@ -30,7 +30,8 @@
 	![](https://raw.githubusercontent.com/0crash0/myMAS_lights/main/images/Screenshot_2.png)
 
 	![](https://raw.githubusercontent.com/0crash0/myMAS_lights/main/images/Screenshot_3.png)
-and add that mel script:
+	
+	and add that mel script:
 `source "myMAS_lights/myMAS_lights.mel"; myMAS_lightsUI();`
 3. Done.
 
